@@ -16,11 +16,15 @@ const DashboardSidebarContent = () => {
           <img src={user?.photoURL} className="w-16 rounded-full" />
           <span>{user?.displayName}</span>
           <span className="text-xs">{user?.email}</span>
-          <button onClick={handleLogout} className="text-red-600 text-sm hover:underline">
+          <button
+            onClick={handleLogout}
+            className="text-red-600 text-sm hover:underline"
+          >
             Logout
           </button>
         </div>
         <hr />
+        <Link to="/dashboard/allUsers">All users</Link>
         <div className="pt-4">
           {user.role == "admin" ? (
             <div>I am a Admin</div>
