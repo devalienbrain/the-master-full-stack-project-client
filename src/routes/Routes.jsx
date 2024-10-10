@@ -1,16 +1,16 @@
 import { createBrowserRouter } from "react-router-dom";
-import MainLayout from "../layout/MainLayout";
+import HomeLayout from "../layout/HomeLayout";
 import HomePage from "../pages/HomePage";
 import PublicPage from "../pages/PublicPage";
 import PrivatePage from "../pages/PrivatePage";
 import LoginPage from "../pages/LoginPage";
-import LoginLayout from "../layout/LoginLayout";
 import PrivateRoute from "./PrivateRoute";
+import DashboardLayout from "../layout/DashboardLayout";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout />,
+    element: <HomeLayout />,
     children: [
       {
         path: "/",
@@ -28,21 +28,16 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-      // {
-      //   path: "/login",
-      //   element: <LoginPage />,
-      // },
-    ],
-  },
-  {
-    path: "/login",
-    element: <LoginLayout />,
-    children: [
       {
         path: "/login",
         element: <LoginPage />,
       },
     ],
+  },
+  {
+    path: "/dashboard",
+    element: <DashboardLayout />,
+    children: [{}],
   },
 ]);
 

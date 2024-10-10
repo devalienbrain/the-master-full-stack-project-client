@@ -1,9 +1,14 @@
-const HomePage = () => {
-  return (<>
-    <div className="flex justify-center items-center text-2xl font bold">
-      This is Home Page
+import Banner from "../components/home/Banner";
+import Faq from "../components/home/Faq";
 
-    </div>
-  </>)
-}
-export default HomePage
+const HomePage = () => {
+  return (
+    <>
+      <div className="">
+        <Banner />
+        <Faq />
+      </div>
+    </>
+  );
+};
+export default HomePage;
