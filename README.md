@@ -1,3 +1,6 @@
+# Server side code link: [https://github.com/devalienbrain/the-master-full-stack-project-client](https://github.com/devalienbrain/the-master-full-stack-project-server)
+
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
