@@ -4,17 +4,27 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaGithub, FaFacebook } from "react-icons/fa";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
-const LoginPage = () => {
-  const { loginWithGoogle, logInWithGithub, logInWithFacebook } =
-    useContext(AuthContext);
+const RegisterPage = () => {
+  const {
+    registerWithEmail,
+    loginWithGoogle,
+    logInWithGithub,
+    logInWithFacebook,
+  } = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleEmailLogin = (e) => {
+  const handleEmailRegister = (e) => {
     e.preventDefault();
-    // Handle email login logic here
+    registerWithEmail(email, password)
+      .then(() => {
+        navigate("/");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   const handleGoogleLogin = () => {
@@ -48,11 +58,11 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="hero min-h-screen bg-white pt-10 font-semibold">
-      <div className="card w-full max-w-xl border rounded-md border-gray-300">
-        <form className="card-body" onSubmit={handleEmailLogin}>
+    <div className="hero min-h-screen bg-white font-semibold">
+      <div className="card w-full max-w-xl  border border-gray-300">
+        <form className="card-body" onSubmit={handleEmailRegister}>
           <h1 className="text-4xl font-extrabold text-center mb-4">
-            Please Login!
+            Please Register First!
           </h1>
 
           <div className="form-control">
@@ -89,15 +99,10 @@ const LoginPage = () => {
                 {showPassword ? <AiFillEyeInvisible /> : <AiFillEye />}
               </span>
             </div>
-            <label className="label">
-              <Link to="#" className="label-text-alt link link-hover">
-                Forgot password?
-              </Link>
-            </label>
           </div>
 
           <div className="form-control mt-6">
-            <button className="btn bg-black text-white w-full">Login</button>
+            <button className="btn btn-accent w-full">Register</button>
           </div>
 
           <div className="divider">OR</div>
@@ -105,31 +110,31 @@ const LoginPage = () => {
           <div className="flex flex-col space-y-2">
             <button
               onClick={handleGoogleLogin}
-              className="btn flex items-center justify-center"
+              className="btn border border-green-400 flex items-center justify-center"
             >
               <FaGoogle className="mr-2" />
-              Login with Google
+              Register with Google
             </button>
             <button
               onClick={handleGithubLogin}
-              className="btn flex items-center justify-center"
+              className="btn border border-black flex items-center justify-center"
             >
               <FaGithub className="mr-2" />
-              Login with GitHub
+              Register with GitHub
             </button>
             <button
               onClick={handleFacebookLogin}
-              className="btn flex items-center justify-center"
+              className="btn border border-blue-600 flex items-center justify-center"
             >
               <FaFacebook className="mr-2" />
-              Login with Facebook
+              Register with Facebook
             </button>
           </div>
 
           <p className="mt-4 text-center">
-            Don't have an account?{" "}
-            <Link to="/register" className="link">
-              Register here
+            Already have an account?{" "}
+            <Link to="/login" className="link">
+              Login here
             </Link>
           </p>
         </form>
@@ -138,4 +143,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

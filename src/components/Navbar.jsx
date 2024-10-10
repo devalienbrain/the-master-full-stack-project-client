@@ -6,7 +6,6 @@ const Navbar = () => {
   const { user } = useContext(AuthContext);
   console.log(user);
 
-  
   return (
     <>
       <div className="navbar">
@@ -17,11 +16,11 @@ const Navbar = () => {
         </div>
         <div className="navbar-end">
           {user ? (
-            <Link to="/dashboard">
-              <img src={user?.photoURL} className="w-7 rounded-full" />
+            <Link to="/dashboard" className="btn bg-none border rounded-full font-bold">
+              Dashboard
             </Link>
           ) : (
-            <Link to="/login" className="btn">
+            <Link to="/login" className="font-semibold">
               Login
             </Link>
           )}
