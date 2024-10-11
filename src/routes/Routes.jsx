@@ -9,6 +9,9 @@ import DashboardLayout from "../layout/DashboardLayout";
 import RegisterPage from "../pages/RegisterPage";
 import AllUsers from "../pages/dashboardPages/AllUsers";
 import Profile from "../pages/dashboardPages/Profile";
+import Messages from "../pages/dashboardPages/Messages";
+import CreateMessage from "../pages/dashboardPages/CreateMessages";
+import MessageDetails from "../pages/dashboardPages/MessageDetails";
 
 const router = createBrowserRouter([
   {
@@ -56,6 +59,18 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <Profile />,
+      },
+      {
+        path: "messages",
+        element: <Messages />,
+      },
+      {
+        path: "messages/:id",
+        element: <MessageDetails />,
+      },
+      {
+        path: "createMessage",
+        element: <CreateMessage />,
       },
     ],
   },

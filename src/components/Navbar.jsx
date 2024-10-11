@@ -1,6 +1,8 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../provider/AuthProvider";
+import { MdDashboard, MdSpaceDashboard } from "react-icons/md";
+import { RxDashboard } from "react-icons/rx";
 
 const Navbar = () => {
   const { user } = useContext(AuthContext);
@@ -10,14 +12,18 @@ const Navbar = () => {
     <>
       <div className="navbar border-b">
         <div className="navbar-start">
-          <Link to="/" className="btn btn-ghost text-2xl font-extrabold">
+          <Link
+            to="/"
+            className="btn btn-ghost text-2xl font-extrabold"
+            title="Home"
+          >
             DEV.
           </Link>
         </div>
         <div className="navbar-end">
           {user ? (
-            <Link to="/dashboard" className="btn bg-none border rounded-full font-bold">
-              Dashboard
+            <Link to="/dashboard" title="Dashboard">
+              <MdSpaceDashboard className="w-6 h-6" />
             </Link>
           ) : (
             <Link to="/login" className="font-semibold">
