@@ -4,7 +4,7 @@ import { FiSend } from "react-icons/fi";
 import Messages from "./Messages";
 
 const CreateMessage = () => {
-  const { user } = useContext(AuthContext); // Assume AuthContext provides current user's info
+  const { user } = useContext(AuthContext); 
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,15 +46,17 @@ const CreateMessage = () => {
 
   return (
     <div className="p-4">
+      <div className="pb-3 w-full">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+        >
+          Create Message
+        </button>
+      </div>
       <div>
         <Messages />
       </div>
-      <button
-        onClick={() => setIsModalOpen(true)}
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-      >
-        Create Message
-      </button>
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">

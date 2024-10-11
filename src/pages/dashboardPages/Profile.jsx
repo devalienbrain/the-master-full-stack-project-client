@@ -4,25 +4,44 @@ import { FiEdit } from "react-icons/fi"; // Importing react-icon
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editProfile, setEditProfile] = useState({
-    displayName: user?.displayName || "",
-    phone: user?.phone || "",
-    address: user?.address || "",
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    displayName: "",
+    phone: "",
+    photoURL: "",
+    address: "",
   });
 
-  const handleEditClick = () => {
-    setIsModalOpen(true);
+  // Update user info
+  const handleUpdate = async () => {
+    const updatedUser = {
+      ...user,
+      displayName: formData.displayName,
+      phone: formData.phone,
+      photoUrl: formData.photoUrl,
+      address: formData.address,
+    };
+
+    await fetch(`http://localhost:5000/user/${user._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedUser),
+    });
+
+    setIsEditModalOpen(false);
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditProfile({ ...editProfile, [name]: value });
-  };
-
-  const handleSave = () => {
-    // Save the updated profile information here (API call, etc.)
-    setIsModalOpen(false);
+  // Open the edit modal with the user's current details
+  const handleOpenEditModal = () => {
+    setFormData({
+      displayName: user.displayName || "",
+      phone: user.phone || "",
+      photoUrl: user.photoUrl || "",
+      address: user.address || "",
+    });
+    setIsEditModalOpen(true);
   };
 
   return (
@@ -37,10 +56,18 @@ const Profile = () => {
           {user?.displayName}
         </h2>
         <p className="text-gray-500">{user?.email}</p>
+        <div>
+          <strong
+            className={!user?.isBlocked ? "text-green-500" : "text-red-500"}
+          >
+            {!user?.isBlocked ? "Active" : "Blocked"}
+          </strong>
+        </div>
       </div>
 
       <div className="mt-6 w-full">
-        <h3 className="text-lg font-semibold text-gray-700">User Details</h3>
+        <h3 className="text-xl font-bold text-gray-700">Profile Details</h3>
+        <hr />
         <ul className="mt-3 text-gray-600 space-y-2">
           <li>
             <strong>Role:</strong> {user?.isAdmin ? "Admin" : "User"}
@@ -54,78 +81,84 @@ const Profile = () => {
           <li>
             <strong>Address:</strong> {user?.address || "N/A"}
           </li>
+          <hr />
+          <li>
+            <strong>Unique ID:</strong> {user?.uid}
+          </li>
         </ul>
       </div>
 
       {/* Edit Button with React Icon */}
-      <button
-        className="absolute top-4 right-4 text-gray-500 hover:text-blue-600 transition-transform transform hover:scale-105"
-        onClick={handleEditClick}
-      >
-        <FiEdit size={24} />
-      </button>
+      {!user?.isBlocked ? (
+        <button
+          className="absolute top-4 right-4 text-gray-500 hover:text-blue-600 transition-transform transform hover:scale-105"
+          onClick={handleOpenEditModal}
+        >
+          <FiEdit size={24} />
+        </button>
+      ) : null}
 
-      {/* Edit Profile Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
-              Edit Profile
-            </h2>
-            <form>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  name="displayName"
-                  value={editProfile.displayName}
-                  onChange={handleInputChange}
-                  className="mt-2 p-2 border rounded-lg w-full shadow-sm focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Phone
-                </label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={editProfile.phone}
-                  onChange={handleInputChange}
-                  className="mt-2 p-2 border rounded-lg w-full shadow-sm focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  name="address"
-                  value={editProfile.address}
-                  onChange={handleInputChange}
-                  className="mt-2 p-2 border rounded-lg w-full shadow-sm focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg mr-2 hover:bg-gray-400"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                  onClick={handleSave}
-                >
-                  Save
-                </button>
-              </div>
-            </form>
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg w-1/3">
+            <h3 className="text-xl mb-4">Edit User</h3>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">Name:</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={formData.displayName}
+                onChange={(e) =>
+                  setFormData({ ...formData, displayName: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">Phone:</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">Photo URL:</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={formData.photoUrl}
+                onChange={(e) =>
+                  setFormData({ ...formData, photoUrl: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">Address:</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={formData.address}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
+              />
+            </div>
+            <button
+              onClick={handleUpdate}
+              className="bg-blue-500 text-white p-2 rounded mr-2"
+            >
+              Update
+            </button>
+            <button
+              onClick={() => setIsEditModalOpen(false)}
+              className="bg-gray-500 text-white p-2 rounded"
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
