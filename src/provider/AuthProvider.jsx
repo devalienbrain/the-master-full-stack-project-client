@@ -36,8 +36,8 @@ const AuthProvider = ({ children }) => {
     const newUser = userCredential.user;
 
     // Send user data to backend
-    // await fetch("http://localhost:5000/users", {
-    await fetch("https://the-master-full-stack-project-server.vercel.app", {
+    await fetch("http://localhost:5000/users", {
+    // await fetch("https://the-master-full-stack-project-server.vercel.app", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,10 +65,10 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // const res = await fetch(`http://localhost:5000/user/${currentUser.uid}`);
-        const res = await fetch(
-          `https://the-master-full-stack-project-server.vercel.app/user/${currentUser.uid}`
-        );
+        const res = await fetch(`http://localhost:5000/user/${currentUser.uid}`);
+        // const res = await fetch(
+        //   `https://the-master-full-stack-project-server.vercel.app/user/${currentUser.uid}`
+        // );
         const data = await res.json();
         setUser(data);
       } else {
