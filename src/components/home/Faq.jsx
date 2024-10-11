@@ -14,7 +14,7 @@ const Faq = () => {
   return (
     <div className="py-10 px-5 bg-white rounded-lg shadow-lg max-w-4xl mx-auto">
       {/* Title */}
-      <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">FAQ</h2>
+      <h2 className="text-4xl font-bold text-center mb-4 text-gray-800">Frequently Asked Questions</h2>
       <h3 className="text-lg text-center text-gray-500 mb-8">
         How the website works
       </h3>

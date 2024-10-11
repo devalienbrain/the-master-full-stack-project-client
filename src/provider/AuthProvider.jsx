@@ -1,23 +1,33 @@
 import { createContext, useEffect, useState } from "react";
 import {
   getAuth,
-  GoogleAuthProvider,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
-  signInWithPopup,
   signOut,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import app from "../../public/firebase/firebase.config";
 
 export const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
-  const googleProvider = new GoogleAuthProvider();
   const [user, setUser] = useState(null);
   const auth = getAuth(app);
 
-  // Register with email and password
-  const registerWithEmail = async (email, password) => {
+  // Login with email
+  const loginWithEmail = (email, password) => {
+    return signInWithEmailAndPassword(auth, email, password);
+  };
+
+  // Register with email and send data to backend
+  const registerWithEmail = async (
+    email,
+    password,
+    name,
+    phone,
+    photo,
+    address
+  ) => {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -26,7 +36,8 @@ const AuthProvider = ({ children }) => {
     const newUser = userCredential.user;
 
     // Send user data to backend
-    await fetch("http://localhost:5000/users", {
+    // await fetch("http://localhost:5000/users", {
+    await fetch("https://the-master-full-stack-project-server.vercel.app", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -34,41 +45,15 @@ const AuthProvider = ({ children }) => {
       body: JSON.stringify({
         uid: newUser.uid,
         email: newUser.email,
-        displayName: newUser.displayName || "User", // Customize as needed
-        isAdmin: false, // Default to false
+        displayName: name || "User",
+        phone: phone,
+        photoUrl: photo || "https://i.ibb.co.com/k6hTYW1/Alien-Dev.jpg",
+        address: address,
+        isAdmin: false, // Default role
       }),
     });
 
     return newUser;
-  };
-
-  // Login with Google
-  const loginWithGoogle = async () => {
-    const result = await signInWithPopup(auth, googleProvider);
-    const currentUser = result.user;
-
-    // Check if the user exists in the backend
-    const response = await fetch(
-      `http://localhost:5000/users/${currentUser.uid}`
-    );
-
-    if (response.status === 404) {
-      // If the user doesn't exist, store in backend
-      await fetch("http://localhost:5000/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          uid: currentUser.uid,
-          email: currentUser.email,
-          displayName: currentUser.displayName || "User", // Customize as needed
-          isAdmin: false, // Default to false
-        }),
-      });
-    }
-
-    return currentUser;
   };
 
   // Logout user
@@ -76,11 +61,19 @@ const AuthProvider = ({ children }) => {
     return signOut(auth);
   };
 
-  // Monitor auth state
+  // Monitor auth state and fetch user data from backend
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log(currentUser);
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        // const res = await fetch(`http://localhost:5000/user/${currentUser.uid}`);
+        const res = await fetch(
+          `https://the-master-full-stack-project-server.vercel.app/user/${currentUser.uid}`
+        );
+        const data = await res.json();
+        setUser(data);
+      } else {
+        setUser(null);
+      }
     });
     return () => {
       unsubscribe();
@@ -89,7 +82,7 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ registerWithEmail, loginWithGoogle, user, logOutUser }}
+      value={{ registerWithEmail, user, loginWithEmail, logOutUser }}
     >
       {children}
     </AuthContext.Provider>

@@ -8,7 +8,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="navbar">
+      <div className="navbar border-b">
         <div className="navbar-start">
           <Link to="/" className="btn btn-ghost text-2xl font-extrabold">
             DEV.
