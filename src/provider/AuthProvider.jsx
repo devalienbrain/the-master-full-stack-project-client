@@ -37,7 +37,7 @@ const AuthProvider = ({ children }) => {
 
     // Send user data to backend
     await fetch("http://localhost:5000/users", {
-    // await fetch("https://the-master-full-stack-project-server.vercel.app", {
+      // await fetch("https://the-master-full-stack-project-server.vercel.app", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -50,6 +50,7 @@ const AuthProvider = ({ children }) => {
         photoUrl: photo || "https://i.ibb.co.com/k6hTYW1/Alien-Dev.jpg",
         address: address,
         isAdmin: false, // Default role
+        isBlocked: false, // Default status
       }),
     });
 
@@ -65,7 +66,9 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        const res = await fetch(`http://localhost:5000/user/${currentUser.uid}`);
+        const res = await fetch(
+          `http://localhost:5000/user/${currentUser.uid}`
+        );
         // const res = await fetch(
         //   `https://the-master-full-stack-project-server.vercel.app/user/${currentUser.uid}`
         // );

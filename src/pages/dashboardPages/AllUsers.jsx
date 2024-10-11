@@ -1,14 +1,25 @@
 import { useState, useEffect } from "react";
-import { FaTrash, FaEdit, FaUserShield } from "react-icons/fa";
+import { FaEdit, FaUserShield } from "react-icons/fa";
+import { ImBlocked } from "react-icons/im";
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
+  const [isAdminToggleModalOpen, setIsAdminToggleModalOpen] = useState(false);
+
+  const [formData, setFormData] = useState({
+    displayName: "",
+    phone: "",
+    photoURL: "",
+    address: "",
+  });
 
   // Fetch all users from the backend
   const fetchUsers = async () => {
     const response = await fetch("http://localhost:5000/users");
-    // const response = await fetch("https://the-master-full-stack-project-server.vercel.app/users");
-        const data = await response.json();
+    const data = await response.json();
     setUsers(data);
   };
 
@@ -16,23 +27,16 @@ const AllUsers = () => {
     fetchUsers(); // Load users when the component mounts
   }, []);
 
-  // Delete a user
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      await fetch(`http://localhost:5000/user/${id}`, {
-      // await fetch(`https://the-master-full-stack-project-server.vercel.app/user/${id}`, {
-        method: "DELETE",
-      });
-      fetchUsers(); // Reload users after deletion
-    }
-  };
+  // Block a user
+  const handleBlock = async () => {
+    console.log({ selectedUser });
+    const updatedUser = {
+      ...selectedUser,
+      isBlocked: !selectedUser?.isBlocked,
+    };
+    console.log({ updatedUser });
 
-  // Toggle admin status
-  const handleToggleAdmin = async (user) => {
-    const updatedUser = { ...user, isAdmin: !user.isAdmin };
-
-    await fetch(`http://localhost:5000/user/${user._id}`, {
-    // await fetch(`https://the-master-full-stack-project-server.vercel.app/user/${user._id}`, {
+    await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -40,12 +44,65 @@ const AllUsers = () => {
       body: JSON.stringify(updatedUser),
     });
     fetchUsers(); // Reload users after update
+    setIsBlockModalOpen(false);
+  };
+
+  // Toggle admin status
+  const handleToggleAdmin = async () => {
+    console.log({ selectedUser });
+    const updatedUser = { ...selectedUser, isAdmin: !selectedUser?.isAdmin };
+
+    await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedUser),
+    });
+    fetchUsers(); // Reload users after update
+    setIsAdminToggleModalOpen(false);
+  };
+
+  // Open the edit modal with the user's current details
+  const openEditModal = (user) => {
+    setSelectedUser(user);
+    setFormData({
+      displayName: user.displayName || "",
+      phone: user.phone || "",
+      photoUrl: user.photoUrl || "",
+      address: user.address || "",
+    });
+    setIsEditModalOpen(true);
   };
 
   // Update user info
-  const handleUpdate = (user) => {
-    // You can implement a form or modal here for updating user information
-    alert(`Update info for user: ${user.name}`);
+  const handleUpdate = async () => {
+    const updatedUser = {
+      ...selectedUser,
+      displayName: formData.name,
+      phone: formData.phone,
+      photoUrl: formData.photoUrl,
+      address: formData.address,
+    };
+
+    await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedUser),
+    });
+    fetchUsers(); // Reload users after update
+    setIsEditModalOpen(false);
+  };
+
+  const handleClickedSetBlock = (user) => {
+    setSelectedUser(user);
+    setIsBlockModalOpen(true);
+  };
+  const handleClickedSetUserOrAdminRole = (user) => {
+    setSelectedUser(user);
+    setIsAdminToggleModalOpen(true);
   };
 
   return (
@@ -59,6 +116,7 @@ const AllUsers = () => {
             <th className="py-2 px-4 border">Email</th>
             <th className="py-2 px-4 border">Image</th>
             <th className="py-2 px-4 border">Role</th>
+            <th className="py-2 px-4 border">Status</th>
             <th className="py-2 px-4 border">Actions</th>
           </tr>
         </thead>
@@ -66,47 +124,172 @@ const AllUsers = () => {
           {users.map((user, index) => (
             <tr key={user._id} className="hover:bg-gray-100">
               <td className="py-2 px-4 border">{index + 1}</td>
-              <td className="py-2 px-4 border">{user.displayName || "N/A"}</td>
-              <td className="py-2 px-4 border">{user.email}</td>
+              <td className="py-2 px-4 border">{user?.displayName || "N/A"}</td>
+              <td className="py-2 px-4 border">{user?.email}</td>
               <td className="py-2 px-4 border">
                 <img
-                  src={user.photoURL || "https://via.placeholder.com/50"}
+                  src={user?.photoUrl || "https://via.placeholder.com/50"}
                   alt="user"
-                  className="w-10 h-10 rounded-full"
+                  className="w-10 rounded-full"
                 />
               </td>
               <td className="py-2 px-4 border">
                 {user.isAdmin ? "Admin" : "User"}
               </td>
               <td className="py-2 px-4 border">
+                {user.isBlocked ? "Blocked" : "Active"}
+              </td>
+              <td className="py-2 px-4 border">
                 <button
-                  onClick={() => handleToggleAdmin(user)}
+                  onClick={() => handleClickedSetUserOrAdminRole(user)}
                   className={`mr-2 p-2 rounded-full text-white ${
                     user.isAdmin ? "bg-green-500" : "bg-blue-500"
+                  } ${
+                    user.email === "super-admin@dev-master.com"
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
                   }`}
                   title="Toggle Admin/User"
+                  disabled={user.email === "super-admin@dev-master.com"}
                 >
                   <FaUserShield />
                 </button>
+
                 <button
-                  onClick={() => handleUpdate(user)}
+                  onClick={() => openEditModal(user)}
                   className="mr-2 p-2 rounded-full bg-yellow-500 text-white"
                   title="Edit User"
                 >
                   <FaEdit />
                 </button>
                 <button
-                  onClick={() => handleDelete(user._id)}
-                  className="p-2 rounded-full bg-red-500 text-white"
-                  title="Delete User"
+                  onClick={() => handleClickedSetBlock(user)}
+                  className={`p-2 rounded-full bg-red-500 text-white ${
+                    user.email === "super-admin@dev-master.com"
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                  title="Block User"
+                  disabled={user.email === "super-admin@dev-master.com"}
                 >
-                  <FaTrash />
+                  <ImBlocked />
                 </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg w-1/3">
+            <h3 className="text-xl mb-4">Edit User</h3>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">Name:</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">Phone:</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">Photo URL:</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={formData.photoURL}
+                onChange={(e) =>
+                  setFormData({ ...formData, photoUrl: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium">Address:</label>
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={formData.address}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
+              />
+            </div>
+            <button
+              onClick={handleUpdate}
+              className="bg-blue-500 text-white p-2 rounded mr-2"
+            >
+              Update
+            </button>
+            <button
+              onClick={() => setIsEditModalOpen(false)}
+              className="bg-gray-500 text-white p-2 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Block Confirmation Modal */}
+      {isBlockModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg w-1/3">
+            <h3 className="text-xl mb-4">
+              Are you sure you want to change the status of this user?
+            </h3>
+            <button
+              onClick={handleBlock}
+              className="bg-red-500 text-white p-2 rounded mr-2"
+            >
+              Yes, Change Status
+            </button>
+            <button
+              onClick={() => setIsBlockModalOpen(false)}
+              className="bg-gray-500 text-white p-2 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Toggle Admin Confirmation Modal */}
+      {isAdminToggleModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg w-1/3">
+            <h3 className="text-xl mb-4">
+              Are you sure you want to change the role of this user?
+            </h3>
+            <button
+              onClick={handleToggleAdmin}
+              className="bg-blue-500 text-white p-2 rounded mr-2"
+            >
+              Yes, Change Role
+            </button>
+            <button
+              onClick={() => setIsAdminToggleModalOpen(false)}
+              className="bg-gray-500 text-white p-2 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

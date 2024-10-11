@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../provider/AuthProvider";
 import { MdDashboard, MdSpaceDashboard } from "react-icons/md";
 import { RxDashboard } from "react-icons/rx";
+import { IoMdLogIn } from "react-icons/io";
 
 const Navbar = () => {
   const { user } = useContext(AuthContext);
@@ -26,8 +27,11 @@ const Navbar = () => {
               <MdSpaceDashboard className="w-6 h-6" />
             </Link>
           ) : (
-            <Link to="/login" className="font-semibold">
-              Login
+            <Link
+              to="/login"
+              className="font-semibold flex items-center justify-end gap-2"
+            >
+              Login <IoMdLogIn />
             </Link>
           )}
         </div>
