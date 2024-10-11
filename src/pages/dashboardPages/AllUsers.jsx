@@ -6,8 +6,9 @@ const AllUsers = () => {
 
   // Fetch all users from the backend
   const fetchUsers = async () => {
-    const response = await fetch("http://localhost:5000/users");
-    const data = await response.json();
+    // const response = await fetch("http://localhost:5000/users");
+    const response = await fetch("https://the-master-full-stack-project-server.vercel.app/users");
+        const data = await response.json();
     setUsers(data);
   };
 
@@ -18,7 +19,8 @@ const AllUsers = () => {
   // Delete a user
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
-      await fetch(`http://localhost:5000/user/${id}`, {
+      // await fetch(`http://localhost:5000/user/${id}`, {
+      await fetch(`https://the-master-full-stack-project-server.vercel.app/user/${id}`, {
         method: "DELETE",
       });
       fetchUsers(); // Reload users after deletion
@@ -29,7 +31,8 @@ const AllUsers = () => {
   const handleToggleAdmin = async (user) => {
     const updatedUser = { ...user, isAdmin: !user.isAdmin };
 
-    await fetch(`http://localhost:5000/user/${user._id}`, {
+    // await fetch(`http://localhost:5000/user/${user._id}`, {
+    await fetch(`https://the-master-full-stack-project-server.vercel.app/user/${user._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

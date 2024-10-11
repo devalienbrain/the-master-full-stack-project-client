@@ -1,12 +1,10 @@
 import { useContext, useState } from "react";
 import { AuthContext } from "../provider/AuthProvider";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle, FaGithub, FaFacebook } from "react-icons/fa";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 const LoginPage = () => {
-  const { loginWithGoogle, logInWithGithub, logInWithFacebook } =
-    useContext(AuthContext);
+  const { loginWithEmail } = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,42 +12,13 @@ const LoginPage = () => {
 
   const handleEmailLogin = (e) => {
     e.preventDefault();
-    // Handle email login logic here
-  };
-
-  const handleGoogleLogin = () => {
-    loginWithGoogle()
-      .then(() => {
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const handleGithubLogin = () => {
-    logInWithGithub()
-      .then(() => {
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const handleFacebookLogin = () => {
-    logInWithFacebook()
-      .then(() => {
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    loginWithEmail(email, password);
+    navigate("/dashboard");
   };
 
   return (
     <div className="hero min-h-screen bg-white pt-10 font-semibold">
-      <div className="card w-full max-w-xl border rounded-md border-gray-300">
+      <div className="card w-full max-w-xl ">
         <form className="card-body" onSubmit={handleEmailLogin}>
           <h1 className="text-4xl font-extrabold text-center mb-4">
             Please Login!
@@ -98,32 +67,6 @@ const LoginPage = () => {
 
           <div className="form-control mt-6">
             <button className="btn bg-black text-white w-full">Login</button>
-          </div>
-
-          <div className="divider">OR</div>
-
-          <div className="flex flex-col space-y-2">
-            <button
-              onClick={handleGoogleLogin}
-              className="btn flex items-center justify-center"
-            >
-              <FaGoogle className="mr-2" />
-              Login with Google
-            </button>
-            <button
-              onClick={handleGithubLogin}
-              className="btn flex items-center justify-center"
-            >
-              <FaGithub className="mr-2" />
-              Login with GitHub
-            </button>
-            <button
-              onClick={handleFacebookLogin}
-              className="btn flex items-center justify-center"
-            >
-              <FaFacebook className="mr-2" />
-              Login with Facebook
-            </button>
           </div>
 
           <p className="mt-4 text-center">
