@@ -37,22 +37,25 @@ const AuthProvider = ({ children }) => {
 
     // Send user data to backend
     // await fetch("http://localhost:5000/users", {
-      await fetch("https://the-master-full-stack-project-server.vercel.app", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        uid: newUser.uid,
-        email: newUser.email,
-        displayName: name || "User",
-        phone: phone,
-        photoUrl: photo || "https://i.ibb.co.com/k6hTYW1/Alien-Dev.jpg",
-        address: address,
-        isAdmin: false, // Default role
-        isBlocked: false, // Default status
-      }),
-    });
+    await fetch(
+      "https://the-master-full-stack-project-server.vercel.app/users",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          uid: newUser.uid,
+          email: newUser.email,
+          displayName: name || "User",
+          phone: phone,
+          photoUrl: photo || "https://i.ibb.co.com/k6hTYW1/Alien-Dev.jpg",
+          address: address,
+          isAdmin: false, // Default role
+          isBlocked: false, // Default status
+        }),
+      }
+    );
 
     return newUser;
   };
