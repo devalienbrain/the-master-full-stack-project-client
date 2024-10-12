@@ -22,13 +22,17 @@ const Profile = () => {
       address: formData.address,
     };
 
-    await fetch(`http://localhost:5000/user/${user._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedUser),
-    });
+    // await fetch(`http://localhost:5000/user/${user._id}`, {
+    await fetch(
+      `https://the-master-full-stack-project-server.vercel.app/user/${user._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedUser),
+      }
+    );
 
     setIsEditModalOpen(false);
   };
