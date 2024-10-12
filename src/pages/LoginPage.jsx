@@ -9,11 +9,19 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(null); // State to handle error messages
 
-  const handleEmailLogin = (e) => {
+  const handleEmailLogin = async (e) => {
     e.preventDefault();
-    loginWithEmail(email, password);
-    navigate("/dashboard");
+    setError(null); // Reset any previous errors
+
+    try {
+      await loginWithEmail(email, password); // Try to log in
+      navigate("/dashboard"); // If successful, navigate to dashboard
+    } catch (err) {
+      setError(err.message); // Set error message if login fails
+      console.error(err.message);
+    }
   };
 
   return (
@@ -23,6 +31,9 @@ const LoginPage = () => {
           <h1 className="text-4xl font-extrabold text-center mb-4">
             Please Login!
           </h1>
+
+          {/* Display error message */}
+          {error && <p className="text-red-500 text-center">{error}</p>}
 
           <div className="form-control">
             <label className="label">

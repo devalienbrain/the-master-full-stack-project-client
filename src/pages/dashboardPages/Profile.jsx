@@ -14,27 +14,37 @@ const Profile = () => {
 
   // Update user info
   const handleUpdate = async () => {
-    const updatedUser = {
-      ...user,
-      displayName: formData.displayName,
-      phone: formData.phone,
-      photoUrl: formData.photoUrl,
-      address: formData.address,
-    };
+    try {
+      const updatedUser = {
+        ...user,
+        displayName: formData.displayName,
+        phone: formData.phone,
+        photoUrl: formData.photoUrl,
+        address: formData.address,
+      };
 
-    // await fetch(`http://localhost:5000/user/${user._id}`, {
-    await fetch(
-      `https://the-master-full-stack-project-server.vercel.app/user/${user._id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedUser),
+      // Make API call to update user information
+      const response = await fetch(
+        `https://the-master-full-stack-project-server.vercel.app/user/${user._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedUser),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update user information");
       }
-    );
 
-    setIsEditModalOpen(false);
+      // Close the modal upon successful update
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      alert("There was an error updating the user. Please try again.");
+    }
   };
 
   // Open the edit modal with the user's current details

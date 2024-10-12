@@ -18,12 +18,15 @@ const AllUsers = () => {
 
   // Fetch all users from the backend
   const fetchUsers = async () => {
-    // const response = await fetch("http://localhost:5000/users");
-    const response = await fetch(
-      "https://the-master-full-stack-project-server.vercel.app/users"
-    );
-    const data = await response.json();
-    setUsers(data);
+    try {
+      const response = await fetch(
+        "https://the-master-full-stack-project-server.vercel.app/users"
+      );
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
   };
 
   useEffect(() => {
@@ -32,46 +35,52 @@ const AllUsers = () => {
 
   // Block a user
   const handleBlock = async () => {
-    console.log({ selectedUser });
-    const updatedUser = {
-      ...selectedUser,
-      isBlocked: !selectedUser?.isBlocked,
-    };
-    console.log({ updatedUser });
+    try {
+      console.log({ selectedUser });
+      const updatedUser = {
+        ...selectedUser,
+        isBlocked: !selectedUser?.isBlocked,
+      };
+      console.log({ updatedUser });
 
-    // await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
-    await fetch(
-      `https://the-master-full-stack-project-server.vercel.app/user/${selectedUser._id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedUser),
-      }
-    );
-    fetchUsers(); // Reload users after update
-    setIsBlockModalOpen(false);
+      await fetch(
+        `https://the-master-full-stack-project-server.vercel.app/user/${selectedUser._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedUser),
+        }
+      );
+      fetchUsers(); // Reload users after update
+      setIsBlockModalOpen(false);
+    } catch (error) {
+      console.error("Error blocking/unblocking user:", error);
+    }
   };
 
   // Toggle admin status
   const handleToggleAdmin = async () => {
-    console.log({ selectedUser });
-    const updatedUser = { ...selectedUser, isAdmin: !selectedUser?.isAdmin };
+    try {
+      console.log({ selectedUser });
+      const updatedUser = { ...selectedUser, isAdmin: !selectedUser?.isAdmin };
 
-    // await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
-    await fetch(
-      `https://the-master-full-stack-project-server.vercel.app/user/${selectedUser._id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedUser),
-      }
-    );
-    fetchUsers(); // Reload users after update
-    setIsAdminToggleModalOpen(false);
+      await fetch(
+        `https://the-master-full-stack-project-server.vercel.app/user/${selectedUser._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedUser),
+        }
+      );
+      fetchUsers(); // Reload users after update
+      setIsAdminToggleModalOpen(false);
+    } catch (error) {
+      console.error("Error toggling admin status:", error);
+    }
   };
 
   // Open the edit modal with the user's current details
@@ -88,27 +97,30 @@ const AllUsers = () => {
 
   // Update user info
   const handleUpdate = async () => {
-    const updatedUser = {
-      ...selectedUser,
-      displayName: formData.name,
-      phone: formData.phone,
-      photoUrl: formData.photoUrl,
-      address: formData.address,
-    };
+    try {
+      const updatedUser = {
+        ...selectedUser,
+        displayName: formData.name,
+        phone: formData.phone,
+        photoUrl: formData.photoUrl,
+        address: formData.address,
+      };
 
-    // await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
-    await fetch(
-      `https://the-master-full-stack-project-server.vercel.app/user/${selectedUser._id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updatedUser),
-      }
-    );
-    fetchUsers(); // Reload users after update
-    setIsEditModalOpen(false);
+      await fetch(
+        `https://the-master-full-stack-project-server.vercel.app/user/${selectedUser._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedUser),
+        }
+      );
+      fetchUsers(); // Reload users after update
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
   };
 
   const handleClickedSetBlock = (user) => {
@@ -246,13 +258,13 @@ const AllUsers = () => {
             </div>
             <button
               onClick={handleUpdate}
-              className="bg-blue-500 text-white p-2 rounded mr-2"
+              className="bg-blue-500 text-white px-4 py-2 rounded"
             >
-              Update
+              Save Changes
             </button>
             <button
               onClick={() => setIsEditModalOpen(false)}
-              className="bg-gray-500 text-white p-2 rounded"
+              className="bg-red-500 text-white px-4 py-2 rounded ml-4"
             >
               Cancel
             </button>
@@ -260,22 +272,26 @@ const AllUsers = () => {
         </div>
       )}
 
-      {/* Block Confirmation Modal */}
+      {/* Block Modal */}
       {isBlockModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg w-1/3">
             <h3 className="text-xl mb-4">
-              Are you sure you want to change the status of this user?
+              {selectedUser.isBlocked
+                ? "Unblock this user?"
+                : "Block this user?"}
             </h3>
             <button
               onClick={handleBlock}
-              className="bg-red-500 text-white p-2 rounded mr-2"
+              className={`bg-red-500 text-white px-4 py-2 rounded ${
+                selectedUser.isBlocked ? "bg-green-500" : "bg-red-500"
+              }`}
             >
-              Yes, Change Status
+              {selectedUser.isBlocked ? "Unblock" : "Block"}
             </button>
             <button
               onClick={() => setIsBlockModalOpen(false)}
-              className="bg-gray-500 text-white p-2 rounded"
+              className="bg-gray-500 text-white px-4 py-2 rounded ml-4"
             >
               Cancel
             </button>
@@ -283,22 +299,24 @@ const AllUsers = () => {
         </div>
       )}
 
-      {/* Toggle Admin Confirmation Modal */}
+      {/* Toggle Admin Modal */}
       {isAdminToggleModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg w-1/3">
             <h3 className="text-xl mb-4">
-              Are you sure you want to change the role of this user?
+              {selectedUser.isAdmin
+                ? "Revoke Admin Privileges?"
+                : "Grant Admin Privileges?"}
             </h3>
             <button
               onClick={handleToggleAdmin}
-              className="bg-blue-500 text-white p-2 rounded mr-2"
+              className={`bg-green-500 text-white px-4 py-2 rounded`}
             >
-              Yes, Change Role
+              {selectedUser.isAdmin ? "Revoke" : "Grant"}
             </button>
             <button
               onClick={() => setIsAdminToggleModalOpen(false)}
-              className="bg-gray-500 text-white p-2 rounded"
+              className="bg-gray-500 text-white px-4 py-2 rounded ml-4"
             >
               Cancel
             </button>
