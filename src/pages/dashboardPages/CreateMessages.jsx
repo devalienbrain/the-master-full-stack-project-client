@@ -4,7 +4,7 @@ import { FiSend } from "react-icons/fi";
 import Messages from "./Messages";
 
 const CreateMessage = () => {
-  const { user } = useContext(AuthContext); 
+  const { user } = useContext(AuthContext);
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -22,13 +22,17 @@ const CreateMessage = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(messageData),
-      });
+      // const response = await fetch("http://localhost:5000/messages", {
+      const response = await fetch(
+        "https://the-master-full-stack-project-server.vercel.app/messages",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(messageData),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to send message");

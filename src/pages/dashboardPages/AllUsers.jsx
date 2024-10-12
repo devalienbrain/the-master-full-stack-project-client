@@ -18,7 +18,10 @@ const AllUsers = () => {
 
   // Fetch all users from the backend
   const fetchUsers = async () => {
-    const response = await fetch("http://localhost:5000/users");
+    // const response = await fetch("http://localhost:5000/users");
+    const response = await fetch(
+      "https://the-master-full-stack-project-server.vercel.app/users"
+    );
     const data = await response.json();
     setUsers(data);
   };
@@ -36,13 +39,17 @@ const AllUsers = () => {
     };
     console.log({ updatedUser });
 
-    await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedUser),
-    });
+    // await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
+    await fetch(
+      `https://the-master-full-stack-project-server.vercel.app/user/${selectedUser._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedUser),
+      }
+    );
     fetchUsers(); // Reload users after update
     setIsBlockModalOpen(false);
   };
@@ -52,13 +59,17 @@ const AllUsers = () => {
     console.log({ selectedUser });
     const updatedUser = { ...selectedUser, isAdmin: !selectedUser?.isAdmin };
 
-    await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedUser),
-    });
+    // await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
+    await fetch(
+      `https://the-master-full-stack-project-server.vercel.app/user/${selectedUser._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedUser),
+      }
+    );
     fetchUsers(); // Reload users after update
     setIsAdminToggleModalOpen(false);
   };
@@ -85,13 +96,17 @@ const AllUsers = () => {
       address: formData.address,
     };
 
-    await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedUser),
-    });
+    // await fetch(`http://localhost:5000/user/${selectedUser._id}`, {
+    await fetch(
+      `https://the-master-full-stack-project-server.vercel.app/user/${selectedUser._id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedUser),
+      }
+    );
     fetchUsers(); // Reload users after update
     setIsEditModalOpen(false);
   };
