@@ -28,33 +28,44 @@ const AuthProvider = ({ children }) => {
     photo,
     address
   ) => {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    const newUser = userCredential.user;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const newUser = userCredential.user;
 
-    // Send user data to backend
-    // await fetch("http://localhost:5000/users", {
-      await fetch("https://the-master-full-stack-project-server.vercel.app", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        uid: newUser.uid,
-        email: newUser.email,
-        displayName: name || "User",
-        phone: phone,
-        photoUrl: photo || "https://i.ibb.co.com/k6hTYW1/Alien-Dev.jpg",
-        address: address,
-        isAdmin: false, // Default role
-        isBlocked: false, // Default status
-      }),
-    });
+      // Send user data to backend
+      const response = await fetch(
+        "https://the-master-full-stack-project-server.vercel.app/users",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            uid: newUser.uid,
+            email: newUser.email,
+            displayName: name || "User",
+            phone: phone,
+            photoUrl: photo || "https://i.ibb.co/k6hTYW1/Alien-Dev.jpg",
+            address: address,
+            isAdmin: false, // Default role
+            isBlocked: false, // Default status
+          }),
+        }
+      );
 
-    return newUser;
+      if (!response.ok) {
+        throw new Error("Failed to register user data.");
+      }
+
+      return newUser;
+    } catch (error) {
+      console.error("Registration failed:", error.message);
+      throw error; // Re-throw error for further handling if needed
+    }
   };
 
   // Logout user
@@ -66,19 +77,25 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        const res = await fetch(
-          // `http://localhost:5000/user/${currentUser.uid}`
-          `https://the-master-full-stack-project-server.vercel.app/user/${currentUser.uid}`
-        );
-        // const res = await fetch(
-        //   `https://the-master-full-stack-project-server.vercel.app/user/${currentUser.uid}`
-        // );
-        const data = await res.json();
-        setUser(data);
+        try {
+          const res = await fetch(
+            `https://the-master-full-stack-project-server.vercel.app/user/${currentUser.uid}`
+          );
+
+          if (!res.ok) {
+            throw new Error("Failed to fetch user data.");
+          }
+
+          const data = await res.json();
+          setUser(data);
+        } catch (error) {
+          console.error("Error fetching user data:", error.message);
+        }
       } else {
         setUser(null);
       }
     });
+
     return () => {
       unsubscribe();
     };

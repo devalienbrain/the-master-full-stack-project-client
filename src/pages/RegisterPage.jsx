@@ -13,16 +13,19 @@ const RegisterPage = () => {
   const [name, setName] = useState("");
   const [photo, setPhotoUrl] = useState("");
   const [address, setAddress] = useState("");
+  const [error, setError] = useState(null); // To store error message if registration fails
 
-  const handleEmailRegister = (e) => {
+  const handleEmailRegister = async (e) => {
     e.preventDefault();
-    registerWithEmail(email, password, name, phone, photo, address)
-      .then(() => {
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    setError(null); // Reset any previous errors
+
+    try {
+      await registerWithEmail(email, password, name, phone, photo, address);
+      navigate("/"); // Redirect on successful registration
+    } catch (err) {
+      setError(err.message); // Capture and display error message
+      console.error(err.message);
+    }
   };
 
   return (
@@ -33,13 +36,16 @@ const RegisterPage = () => {
             Please Register First!
           </h1>
 
+          {/* Display error message */}
+          {error && <p className="text-red-500 text-center">{error}</p>}
+
           <div className="form-control">
             <label className="label">
               <span className="label-text">Name</span>
             </label>
             <input
-              type="name"
-              placeholder="Enter your email"
+              type="text"
+              placeholder="Enter your name"
               className="input input-bordered"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -82,12 +88,13 @@ const RegisterPage = () => {
               </span>
             </div>
           </div>
+
           <div className="form-control">
             <label className="label">
               <span className="label-text">Phone</span>
             </label>
             <input
-              type="phone"
+              type="tel"
               placeholder="Enter your phone number"
               className="input input-bordered"
               value={phone}
@@ -98,10 +105,10 @@ const RegisterPage = () => {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text">Photo </span>
+              <span className="label-text">Photo URL</span>
             </label>
             <input
-              type="text" // should be 'text', not 'photo'
+              type="text"
               placeholder="Enter your photo URL"
               className="input input-bordered"
               value={photo}
@@ -109,7 +116,7 @@ const RegisterPage = () => {
               required
             />
             <div className="pt-3 text-xs">
-              As default copy & paste :{" "}
+              As default, copy & paste:{" "}
               <span className="underline">
                 https://i.ibb.co.com/k6hTYW1/Alien-Dev.jpg{" "}
               </span>
@@ -121,7 +128,7 @@ const RegisterPage = () => {
               <span className="label-text">Address</span>
             </label>
             <input
-              type="address"
+              type="text"
               placeholder="Enter your home address"
               className="input input-bordered"
               value={address}
